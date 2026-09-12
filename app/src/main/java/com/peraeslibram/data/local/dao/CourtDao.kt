@@ -17,8 +17,14 @@ interface CourtDao {
     @Query("SELECT * FROM courts WHERE id = :id")
     suspend fun getById(id: Long): CourtEntity?
 
+    @Query("SELECT COUNT(*) FROM courts")
+    suspend fun count(): Int
+
     @Insert
     suspend fun insert(court: CourtEntity): Long
+
+    @Insert
+    suspend fun insertAll(courts: List<CourtEntity>)
 
     @Update
     suspend fun update(court: CourtEntity)

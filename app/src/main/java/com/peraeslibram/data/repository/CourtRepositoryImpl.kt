@@ -3,6 +3,7 @@ package com.peraeslibram.data.repository
 import com.peraeslibram.data.local.dao.CourtDao
 import com.peraeslibram.data.local.entity.toDomain
 import com.peraeslibram.data.local.entity.toEntity
+import com.peraeslibram.data.local.seed.CourtSeedData
 import com.peraeslibram.domain.model.Court
 import com.peraeslibram.domain.repository.CourtRepository
 import javax.inject.Inject
@@ -27,4 +28,10 @@ class CourtRepositoryImpl @Inject constructor(
     }
 
     override suspend fun delete(court: Court) = courtDao.delete(court.toEntity())
+
+    override suspend fun ensureSeeded() {
+        if (courtDao.count() == 0) {
+            courtDao.insertAll(CourtSeedData.defaultCourts().map { it.toEntity() })
+        }
+    }
 }

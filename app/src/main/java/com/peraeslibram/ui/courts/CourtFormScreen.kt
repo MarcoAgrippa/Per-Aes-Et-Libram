@@ -1,5 +1,7 @@
 package com.peraeslibram.ui.courts
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,18 +15,21 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,6 +41,7 @@ fun CourtFormScreen(
     onBack: () -> Unit,
     viewModel: CourtFormViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,6 +74,21 @@ fun CourtFormScreen(
                 onValueChange = { viewModel.adresa = it },
                 label = { Text("Adresa") },
                 leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                trailingIcon = {
+                    if (viewModel.adresa.isNotBlank()) {
+                        IconButton(onClick = {
+                            val encoded = Uri.encode("${viewModel.naziv}, ${viewModel.adresa}")
+                            val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$encoded")
+                            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        }) {
+                            Icon(
+                                Icons.Default.Map,
+                                contentDescription = "Otvori adresu na mapi",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(

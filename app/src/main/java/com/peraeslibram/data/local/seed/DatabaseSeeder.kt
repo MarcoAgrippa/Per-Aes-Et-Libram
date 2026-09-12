@@ -37,6 +37,8 @@ class DatabaseSeeder @Inject constructor(
                 .flatMap { year -> HolidaySeedData.forYear(year) }
                 .map { it.toEntity() }
             db.nonWorkingDayDao().insertAll(holidayEntities)
+
+            db.courtDao().insertAll(CourtSeedData.defaultCourts().map { it.toEntity() })
         }
     }
 }
