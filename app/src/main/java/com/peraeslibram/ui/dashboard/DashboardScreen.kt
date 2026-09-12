@@ -19,10 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Balance
-import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Gavel
-import androidx.compose.material.icons.filled.HourglassBottom
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,20 +41,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.AgendaItem
+import com.peraeslibram.ui.common.DeadlineRowContent
 import com.peraeslibram.ui.common.EmptyState
 import com.peraeslibram.ui.common.IconBadge
-import com.peraeslibram.ui.common.StatusChip
-import java.time.LocalDate
+import com.peraeslibram.ui.common.TimeframeHeader
+import com.peraeslibram.ui.common.groupByTimeframe
 import java.time.format.DateTimeFormatter
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM. HH:mm")
-private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    onOpenCases: () -> Unit,
-    onOpenSettings: () -> Unit,
+    onOpenDrawer: () -> Unit,
+    onAddCase: () -> Unit,
     onOpenCase: (Long) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
@@ -77,30 +75,31 @@ fun DashboardScreen(
                         Icon(
                             Icons.Default.Balance,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                         Text("Per Aes Et Libram", style = MaterialTheme.typography.titleLarge)
                     }
                 },
-                actions = {
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Podešavanja", tint = MaterialTheme.colorScheme.onPrimary)
+                navigationIcon = {
+                    IconButton(onClick = onOpenDrawer) {
+                        Icon(Icons.Default.Menu, contentDescription = "Meni")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onOpenCases,
+                onClick = onAddCase,
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Predmeti")
+                Icon(Icons.Default.Add, contentDescription = "Novi predmet")
             }
         }
     ) { padding ->
@@ -113,21 +112,13 @@ fun DashboardScreen(
                 )
             }
         } else {
-            val grouped = groupAgenda(agenda)
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(padding),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                grouped.forEach { (label, items) ->
-                    item {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
-                        )
-                    }
+                groupByTimeframe(agenda) { it.dateTime.toLocalDate() }.forEach { (label, items) ->
+                    item { TimeframeHeader(label) }
                     items(items) { agendaItem ->
                         AgendaItemCard(agendaItem, onClick = { onOpenCase(agendaItem.caseId) })
                     }
@@ -162,62 +153,8 @@ private fun AgendaItemCard(item: AgendaItem, onClick: () -> Unit) {
                         }
                     }
                 }
-                is AgendaItem.DeadlineItem -> {
-                    val isIstekao = item.deadline.isIstekao()
-                    IconBadge(
-                        icon = if (isIstekao) Icons.Default.EventBusy else Icons.Default.HourglassBottom,
-                        containerColor = if (isIstekao) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = if (isIstekao) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Rok — ${item.caseNaziv ?: "(bez naziva)"}", style = MaterialTheme.typography.titleSmall)
-                        Text(item.deadline.nazivRadnjePrikaz, style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            text = "Krajnji datum: ${item.deadline.izracunatiKrajnjiDatum.format(dateFormatter)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        if (item.deadline.krajnjiDatumPomeren) {
-                            Text(
-                                "Pomeren sa ${item.deadline.originalniKrajnjiDatum?.format(dateFormatter)} (neradni dan)",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        if (isIstekao) {
-                            StatusChip(
-                                text = "ISTEKAO",
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                        }
-                    }
-                }
+                is AgendaItem.DeadlineItem -> DeadlineRowContent(item.deadline, item.caseNaziv)
             }
         }
     }
-}
-
-private fun groupAgenda(items: List<AgendaItem>): List<Pair<String, List<AgendaItem>>> {
-    val today = LocalDate.now()
-    val tomorrow = today.plusDays(1)
-    val endOfWeek = today.plusDays(7)
-
-    val danas = items.filter { it.dateTime.toLocalDate() == today }
-    val sutra = items.filter { it.dateTime.toLocalDate() == tomorrow }
-    val oveNedelje = items.filter {
-        val d = it.dateTime.toLocalDate()
-        d.isAfter(tomorrow) && !d.isAfter(endOfWeek)
-    }
-    val kasnije = items.filter { it.dateTime.toLocalDate().isAfter(endOfWeek) }
-    val prosli = items.filter { it.dateTime.toLocalDate().isBefore(today) }
-
-    return listOf(
-        "Prošli / istekli" to prosli,
-        "Danas" to danas,
-        "Sutra" to sutra,
-        "Ove nedelje" to oveNedelje,
-        "Kasnije" to kasnije
-    ).filter { it.second.isNotEmpty() }
 }

@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AlarmOn
 import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,8 +37,8 @@ import com.peraeslibram.ui.common.IconBadge
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onOpenHolidays: () -> Unit,
-    onBack: () -> Unit
+    onOpenDrawer: () -> Unit,
+    onOpenHolidays: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -47,8 +47,8 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text("Podešavanja") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Nazad")
+                    IconButton(onClick = onOpenDrawer) {
+                        Icon(Icons.Default.Menu, contentDescription = "Meni")
                     }
                 }
             )

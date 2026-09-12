@@ -1,0 +1,680 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "d333d9287c5049cf4391fb613ddf21f4",
+    "entities": [
+      {
+        "tableName": "cases",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `naziv` TEXT NOT NULL, `brojPredmeta` TEXT, `klijentIme` TEXT NOT NULL, `klijentKontakt` TEXT, `sud` TEXT, `tipPostupka` TEXT NOT NULL, `napomena` TEXT, `status` TEXT NOT NULL, `datumKreiranja` INTEGER NOT NULL, `datumIzmene` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "naziv",
+            "columnName": "naziv",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brojPredmeta",
+            "columnName": "brojPredmeta",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "klijentIme",
+            "columnName": "klijentIme",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "klijentKontakt",
+            "columnName": "klijentKontakt",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sud",
+            "columnName": "sud",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tipPostupka",
+            "columnName": "tipPostupka",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "napomena",
+            "columnName": "napomena",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumKreiranja",
+            "columnName": "datumKreiranja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumIzmene",
+            "columnName": "datumIzmene",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "hearings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `caseId` INTEGER NOT NULL, `datumVreme` INTEGER NOT NULL, `sud` TEXT, `sudnica` TEXT, `tipRocista` TEXT, `napomena` TEXT, `status` TEXT NOT NULL, `datumKreiranja` INTEGER NOT NULL, `datumIzmene` INTEGER NOT NULL, FOREIGN KEY(`caseId`) REFERENCES `cases`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caseId",
+            "columnName": "caseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumVreme",
+            "columnName": "datumVreme",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sud",
+            "columnName": "sud",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sudnica",
+            "columnName": "sudnica",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tipRocista",
+            "columnName": "tipRocista",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "napomena",
+            "columnName": "napomena",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumKreiranja",
+            "columnName": "datumKreiranja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumIzmene",
+            "columnName": "datumIzmene",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_hearings_caseId",
+            "unique": false,
+            "columnNames": [
+              "caseId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_hearings_caseId` ON `${TABLE_NAME}` (`caseId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cases",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "caseId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "deadlines",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `caseId` INTEGER NOT NULL, `tipPostupka` TEXT NOT NULL, `tipRadnje` TEXT NOT NULL, `nazivRadnjePrikaz` TEXT NOT NULL, `opisCustomRadnje` TEXT, `datumOkidaca` INTEGER NOT NULL, `brojDana` INTEGER NOT NULL, `izracunatiKrajnjiDatum` INTEGER NOT NULL, `originalniKrajnjiDatum` INTEGER, `krajnjiDatumPomeren` INTEGER NOT NULL, `status` TEXT NOT NULL, `izvor` TEXT NOT NULL, `napomena` TEXT, `datumKreiranja` INTEGER NOT NULL, `datumIzmene` INTEGER NOT NULL, FOREIGN KEY(`caseId`) REFERENCES `cases`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caseId",
+            "columnName": "caseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipPostupka",
+            "columnName": "tipPostupka",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipRadnje",
+            "columnName": "tipRadnje",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nazivRadnjePrikaz",
+            "columnName": "nazivRadnjePrikaz",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opisCustomRadnje",
+            "columnName": "opisCustomRadnje",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "datumOkidaca",
+            "columnName": "datumOkidaca",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brojDana",
+            "columnName": "brojDana",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "izracunatiKrajnjiDatum",
+            "columnName": "izracunatiKrajnjiDatum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalniKrajnjiDatum",
+            "columnName": "originalniKrajnjiDatum",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "krajnjiDatumPomeren",
+            "columnName": "krajnjiDatumPomeren",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "izvor",
+            "columnName": "izvor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "napomena",
+            "columnName": "napomena",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "datumKreiranja",
+            "columnName": "datumKreiranja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumIzmene",
+            "columnName": "datumIzmene",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_deadlines_caseId",
+            "unique": false,
+            "columnNames": [
+              "caseId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_deadlines_caseId` ON `${TABLE_NAME}` (`caseId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cases",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "caseId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "deadline_rules",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tipPostupka` TEXT, `tipRadnje` TEXT NOT NULL, `brojDana` INTEGER, `nazivPrikaz` TEXT NOT NULL, `napomenaPravno` TEXT, `aktivno` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipPostupka",
+            "columnName": "tipPostupka",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tipRadnje",
+            "columnName": "tipRadnje",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brojDana",
+            "columnName": "brojDana",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nazivPrikaz",
+            "columnName": "nazivPrikaz",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "napomenaPravno",
+            "columnName": "napomenaPravno",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "aktivno",
+            "columnName": "aktivno",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_deadline_rules_tipRadnje",
+            "unique": true,
+            "columnNames": [
+              "tipRadnje"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_deadline_rules_tipRadnje` ON `${TABLE_NAME}` (`tipRadnje`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "non_working_days",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `datum` INTEGER NOT NULL, `godina` INTEGER NOT NULL, `naziv` TEXT NOT NULL, `tip` TEXT NOT NULL, `izvor` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datum",
+            "columnName": "datum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "godina",
+            "columnName": "godina",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "naziv",
+            "columnName": "naziv",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tip",
+            "columnName": "tip",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "izvor",
+            "columnName": "izvor",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_non_working_days_datum",
+            "unique": true,
+            "columnNames": [
+              "datum"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_non_working_days_datum` ON `${TABLE_NAME}` (`datum`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "reminders",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hearingId` INTEGER, `deadlineId` INTEGER, `minutesBefore` INTEGER NOT NULL, `vremeOkidanja` INTEGER NOT NULL, `notifikacijaId` INTEGER NOT NULL, `aktivan` INTEGER NOT NULL, `poslat` INTEGER NOT NULL, FOREIGN KEY(`hearingId`) REFERENCES `hearings`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`deadlineId`) REFERENCES `deadlines`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hearingId",
+            "columnName": "hearingId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "deadlineId",
+            "columnName": "deadlineId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "minutesBefore",
+            "columnName": "minutesBefore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vremeOkidanja",
+            "columnName": "vremeOkidanja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notifikacijaId",
+            "columnName": "notifikacijaId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aktivan",
+            "columnName": "aktivan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "poslat",
+            "columnName": "poslat",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_reminders_hearingId",
+            "unique": false,
+            "columnNames": [
+              "hearingId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reminders_hearingId` ON `${TABLE_NAME}` (`hearingId`)"
+          },
+          {
+            "name": "index_reminders_deadlineId",
+            "unique": false,
+            "columnNames": [
+              "deadlineId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reminders_deadlineId` ON `${TABLE_NAME}` (`deadlineId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "hearings",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "hearingId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "deadlines",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "deadlineId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "prilozi",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `caseId` INTEGER NOT NULL, `naziv` TEXT NOT NULL, `fileName` TEXT NOT NULL, `datumKreiranja` INTEGER NOT NULL, FOREIGN KEY(`caseId`) REFERENCES `cases`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caseId",
+            "columnName": "caseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "naziv",
+            "columnName": "naziv",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fileName",
+            "columnName": "fileName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumKreiranja",
+            "columnName": "datumKreiranja",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_prilozi_caseId",
+            "unique": false,
+            "columnNames": [
+              "caseId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_prilozi_caseId` ON `${TABLE_NAME}` (`caseId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "cases",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "caseId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "courts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `naziv` TEXT NOT NULL, `adresa` TEXT, `telefon` TEXT, `email` TEXT, `napomena` TEXT, `datumKreiranja` INTEGER NOT NULL, `datumIzmene` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "naziv",
+            "columnName": "naziv",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "adresa",
+            "columnName": "adresa",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "telefon",
+            "columnName": "telefon",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "napomena",
+            "columnName": "napomena",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "datumKreiranja",
+            "columnName": "datumKreiranja",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datumIzmene",
+            "columnName": "datumIzmene",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd333d9287c5049cf4391fb613ddf21f4')"
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.peraeslibram.data.local.converters.Converters
 import com.peraeslibram.data.local.dao.CaseDao
+import com.peraeslibram.data.local.dao.CourtDao
 import com.peraeslibram.data.local.dao.DeadlineDao
 import com.peraeslibram.data.local.dao.DeadlineRuleDao
 import com.peraeslibram.data.local.dao.HearingDao
@@ -12,6 +13,7 @@ import com.peraeslibram.data.local.dao.NonWorkingDayDao
 import com.peraeslibram.data.local.dao.PrilogDao
 import com.peraeslibram.data.local.dao.ReminderDao
 import com.peraeslibram.data.local.entity.CaseEntity
+import com.peraeslibram.data.local.entity.CourtEntity
 import com.peraeslibram.data.local.entity.DeadlineEntity
 import com.peraeslibram.data.local.entity.DeadlineRuleEntity
 import com.peraeslibram.data.local.entity.HearingEntity
@@ -27,9 +29,10 @@ import com.peraeslibram.data.local.entity.ReminderEntity
         DeadlineRuleEntity::class,
         NonWorkingDayEntity::class,
         ReminderEntity::class,
-        PrilogEntity::class
+        PrilogEntity::class,
+        CourtEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -41,6 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun nonWorkingDayDao(): NonWorkingDayDao
     abstract fun reminderDao(): ReminderDao
     abstract fun prilogDao(): PrilogDao
+    abstract fun courtDao(): CourtDao
 
     companion object {
         const val DATABASE_NAME = "per_aes_et_libram.db"

@@ -1,12 +1,14 @@
 package com.peraeslibram.di
 
 import com.peraeslibram.data.repository.CaseRepositoryImpl
+import com.peraeslibram.data.repository.CourtRepositoryImpl
 import com.peraeslibram.data.repository.DeadlineRepositoryImpl
 import com.peraeslibram.data.repository.DeadlineRuleRepositoryImpl
 import com.peraeslibram.data.repository.HearingRepositoryImpl
 import com.peraeslibram.data.repository.NonWorkingDayRepositoryImpl
 import com.peraeslibram.data.repository.PrilogRepositoryImpl
 import com.peraeslibram.domain.repository.CaseRepository
+import com.peraeslibram.domain.repository.CourtRepository
 import com.peraeslibram.domain.repository.DeadlineRepository
 import com.peraeslibram.domain.repository.DeadlineRuleRepository
 import com.peraeslibram.domain.repository.HearingRepository
@@ -45,4 +47,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPrilogRepository(impl: PrilogRepositoryImpl): PrilogRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCourtRepository(impl: CourtRepositoryImpl): CourtRepository
 }

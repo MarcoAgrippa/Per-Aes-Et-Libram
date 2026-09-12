@@ -22,3 +22,22 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         )
     }
 }
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `courts` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `naziv` TEXT NOT NULL,
+                `adresa` TEXT,
+                `telefon` TEXT,
+                `email` TEXT,
+                `napomena` TEXT,
+                `datumKreiranja` INTEGER NOT NULL,
+                `datumIzmene` INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+    }
+}
