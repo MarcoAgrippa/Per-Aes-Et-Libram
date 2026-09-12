@@ -1,0 +1,75 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Klasična vaga pravde (Justicija) — simbol uz naziv "Per Aes et Libram" -->
+
+    <!-- Postolje -->
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M36,88 L72,88 L72,90.5 L36,90.5 Z" />
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M54,80 L70,88 L38,88 Z" />
+
+    <!-- Stub -->
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M52,24 L56,24 L56,84 L52,84 Z" />
+
+    <!-- Kuglica na vrhu -->
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M50,21 A4,4 0 1,1 58,21 A4,4 0 1,1 50,21 Z" />
+
+    <!-- Poprečna greda -->
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M24,25 L84,25 L84,28.5 L24,28.5 Z" />
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M47,24 L61,24 L61,27.5 L47,27.5 Z" />
+
+    <!-- Leva tasa -->
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M24,26.5 L18,50" />
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M24,26.5 L34,50" />
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M18,50 A8,2.2 0 1,1 34,50 A8,2.2 0 1,1 18,50 Z" />
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M16,50 Q26,61 36,50" />
+
+    <!-- Desna tasa -->
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M84,26.5 L74,50" />
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M84,26.5 L90,50" />
+    <path
+        android:fillColor="#DDBB86"
+        android:pathData="M74,50 A8,2.2 0 1,1 90,50 A8,2.2 0 1,1 74,50 Z" />
+    <path
+        android:strokeColor="#DDBB86"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M72,50 Q82,61 92,50" />
+</vector>

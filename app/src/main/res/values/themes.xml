@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.PerAesEtLibram" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:navigationBarColor">@color/status_bar</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

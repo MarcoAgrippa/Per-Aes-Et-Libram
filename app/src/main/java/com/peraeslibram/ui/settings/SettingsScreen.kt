@@ -1,0 +1,149 @@
+package com.peraeslibram.ui.settings
+
+import android.app.AlarmManager
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AlarmOn
+import androidx.compose.material.icons.filled.BatterySaver
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import com.peraeslibram.ui.common.IconBadge
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    onOpenHolidays: () -> Unit,
+    onBack: () -> Unit
+) {
+    val context = LocalContext.current
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Podešavanja") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Nazad")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier.padding(padding).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onOpenHolidays() }
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    IconBadge(
+                        icon = Icons.Default.CalendarMonth,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Upravljanje praznicima", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Pregled i dopuna neradnih dana korišćenih pri obračunu rokova.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(AlarmManager::class.java)
+                if (alarmManager?.canScheduleExactAlarms() == false) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                data = "package:${context.packageName}".toUri()
+                            }
+                            context.startActivity(intent)
+                        },
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            IconBadge(
+                                icon = Icons.Default.AlarmOn,
+                                containerColor = MaterialTheme.colorScheme.onErrorContainer,
+                                contentColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "Dozvola za tačne alarme nije uključena",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                Text(
+                                    "Bez ove dozvole podsetnici za ročišta i rokove neće stizati na tačno vreme. Dodirnite da uključite.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    IconBadge(
+                        icon = Icons.Default.BatterySaver,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Ušteda baterije", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Na pojedinim uređajima (Xiaomi, Huawei, Samsung i sl.) proizvođačka ušteda baterije " +
+                                "može odložiti podsetnike. Preporučuje se isključivanje uštede baterije za ovu aplikaciju " +
+                                "u sistemskim podešavanjima uređaja.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
