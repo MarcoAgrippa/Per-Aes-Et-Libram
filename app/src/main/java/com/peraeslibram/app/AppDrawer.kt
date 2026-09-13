@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
@@ -30,9 +29,8 @@ import androidx.compose.ui.unit.dp
 
 /** Rute sa kojih je fioka dostupna — hamburger u traci i prevlačenje sa ivice. */
 val TOP_LEVEL_ROUTES: Set<String> = setOf(
-    Routes.DASHBOARD,
+    Routes.ROKOVI,
     Routes.CASES,
-    Routes.DEADLINES,
     Routes.COURTS,
     Routes.NOTARIES,
     Routes.SETTINGS
@@ -43,9 +41,8 @@ private enum class DrawerDestination(
     val label: String,
     val icon: ImageVector
 ) {
-    DASHBOARD(Routes.DASHBOARD, "Početna", Icons.Default.Home),
+    ROKOVI(Routes.ROKOVI, "Rokovi", Icons.Default.HourglassBottom),
     CASES(Routes.CASES, "Predmeti", Icons.Default.Business),
-    DEADLINES(Routes.DEADLINES, "Rokovi", Icons.Default.HourglassBottom),
     COURTS(Routes.COURTS, "Sudovi", Icons.Default.AccountBalance),
     NOTARIES(Routes.NOTARIES, "Javni beležnici", Icons.Default.Description)
 }

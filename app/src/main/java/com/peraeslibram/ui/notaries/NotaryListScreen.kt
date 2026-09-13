@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -31,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -47,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.Notary
 import com.peraeslibram.ui.common.EmptyState
-import com.peraeslibram.ui.common.IconBadge
+import com.peraeslibram.ui.common.initialsOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,11 +132,16 @@ fun NotaryListScreen(
                                 modifier = Modifier.padding(12.dp).fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                IconBadge(
-                                    icon = Icons.Default.Description,
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
+                                Surface(
+                                    color = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                        Text(initialsOf(notary.naziv), style = MaterialTheme.typography.titleSmall)
+                                    }
+                                }
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(notary.naziv, style = MaterialTheme.typography.titleMedium)
                                     notary.adresa?.let {

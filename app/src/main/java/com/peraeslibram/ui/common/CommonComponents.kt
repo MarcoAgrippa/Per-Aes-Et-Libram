@@ -43,6 +43,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
+
+/** Prva slova prve dve reči imena — inicijali za avatar (npr. "Milica Simić" → "MS"). */
+fun initialsOf(fullName: String): String =
+    fullName.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }.take(2)
+        .joinToString("") { it.first().uppercaseChar().toString() }
 private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -237,6 +242,28 @@ fun StatusChip(
             text = text,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+        )
+    }
+}
+
+/** Mala oznaka za identifikatore (broj predmeta, status) — manji radijus od [StatusChip], koji je pilula. */
+@Composable
+fun TagChip(
+    text: String,
+    containerColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = RoundedCornerShape(7.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp)
         )
     }
 }

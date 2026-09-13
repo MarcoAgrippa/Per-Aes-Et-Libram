@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.ui.common.EmptyState
 import com.peraeslibram.ui.common.IconBadge
+import com.peraeslibram.ui.common.TagChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,16 +101,21 @@ fun CaseListScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(case.naziv, style = MaterialTheme.typography.titleMedium)
                                 Text("Klijent: ${case.klijentIme}", style = MaterialTheme.typography.bodyMedium)
-                                Text(
-                                    "Tip postupka: ${case.tipPostupka}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                case.brojPredmeta?.let {
-                                    Text(
-                                        "Broj predmeta: $it",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                Row(
+                                    modifier = Modifier.padding(top = 6.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    case.brojPredmeta?.let {
+                                        TagChip(
+                                            text = it,
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                    }
+                                    TagChip(
+                                        text = case.tipPostupka.name,
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                     )
                                 }
                             }

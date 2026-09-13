@@ -21,12 +21,11 @@ import com.peraeslibram.ui.cases.CaseFormScreen
 import com.peraeslibram.ui.cases.CaseListScreen
 import com.peraeslibram.ui.courts.CourtFormScreen
 import com.peraeslibram.ui.courts.CourtListScreen
-import com.peraeslibram.ui.dashboard.DashboardScreen
 import com.peraeslibram.ui.deadlines.DeadlineFormScreen
-import com.peraeslibram.ui.deadlines.DeadlineListScreen
 import com.peraeslibram.ui.hearings.HearingFormScreen
 import com.peraeslibram.ui.notaries.NotaryFormScreen
 import com.peraeslibram.ui.notaries.NotaryListScreen
+import com.peraeslibram.ui.rokovi.RokoviScreen
 import com.peraeslibram.ui.settings.HolidayManagementScreen
 import com.peraeslibram.ui.settings.SettingsScreen
 import kotlinx.coroutines.launch
@@ -35,13 +34,12 @@ import kotlinx.coroutines.launch
 const val NEW_ID = -1L
 
 object Routes {
-    const val DASHBOARD = "dashboard"
+    const val ROKOVI = "rokovi"
     const val CASES = "cases"
     const val CASE_FORM = "case_form/{caseId}"
     const val CASE_DETAIL = "case_detail/{caseId}"
     const val HEARING_FORM = "hearing_form/{caseId}/{hearingId}"
     const val DEADLINE_FORM = "deadline_form/{caseId}/{deadlineId}"
-    const val DEADLINES = "deadlines"
     const val COURTS = "courts"
     const val COURT_FORM = "court_form/{courtId}"
     const val NOTARIES = "notaries"
@@ -97,9 +95,9 @@ fun AppNavGraph() {
         gesturesEnabled = isTopLevel || drawerState.isOpen,
         drawerContent = { AppDrawerContent(currentRoute = currentRoute, onNavigate = navigateTopLevel) }
     ) {
-        NavHost(navController = navController, startDestination = Routes.DASHBOARD) {
-            composable(Routes.DASHBOARD) {
-                DashboardScreen(
+        NavHost(navController = navController, startDestination = Routes.ROKOVI) {
+            composable(Routes.ROKOVI) {
+                RokoviScreen(
                     onOpenDrawer = openDrawer,
                     onAddCase = { navController.navigate(Routes.caseForm()) },
                     onOpenCase = { caseId -> navController.navigate(Routes.caseDetail(caseId)) }
@@ -161,14 +159,6 @@ fun AppNavGraph() {
                 DeadlineFormScreen(
                     onSaved = { navController.popBackStack() },
                     onBack = { navController.popBackStack() }
-                )
-            }
-            composable(Routes.DEADLINES) {
-                DeadlineListScreen(
-                    onOpenDrawer = openDrawer,
-                    onOpenDeadline = { caseId, deadlineId ->
-                        navController.navigate(Routes.deadlineForm(caseId, deadlineId))
-                    }
                 )
             }
             composable(Routes.COURTS) {

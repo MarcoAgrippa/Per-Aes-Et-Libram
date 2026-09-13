@@ -105,15 +105,29 @@ class DeadlineFormViewModel @Inject constructor(
     }
 
     private fun recalculate() {
-        val date = datumOkidaca ?: return
-        val days = customBrojDana.toIntOrNull() ?: return
+        val date = datumOkidaca
+        val days = customBrojDana.toIntOrNull()
+        if (date == null || days == null || days <= 0) {
+            calculationResult = null
+            return
+        }
         viewModelScope.launch {
             calculationResult = calculateDueDate(date, days)
         }
     }
 
+    /** Broj dana mora biti pozitivan — [DeadlineCalculator] to zahteva, ovde se provera radi rano da polje javi grešku umesto da obračun baci izuzetak. */
+    fun brojDanaError(): String? {
+        val days = customBrojDana.toIntOrNull()
+        return if (customBrojDana.isNotBlank() && (days == null || days <= 0)) {
+            "Broj dana mora biti pozitivan broj."
+        } else {
+            null
+        }
+    }
+
     fun canSave(): Boolean =
-        datumOkidaca != null && customBrojDana.toIntOrNull() != null && selectedRule != null && calculationResult != null
+        datumOkidaca != null && customBrojDana.toIntOrNull()?.let { it > 0 } == true && selectedRule != null && calculationResult != null
 
     fun save(onSaved: () -> Unit) {
         val rule = selectedRule ?: return

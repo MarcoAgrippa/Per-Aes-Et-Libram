@@ -21,15 +21,15 @@ class GetUpcomingAgendaUseCase @Inject constructor(
         deadlineRepository.observeAll(),
         caseRepository.observeAll()
     ) { hearings, deadlines, cases ->
-        val caseNazivById = cases.associate { it.id to it.naziv }
+        val caseById = cases.associateBy { it.id }
 
         val hearingItems = hearings
             .filter { it.status == HearingStatus.ZAKAZANO }
-            .map { AgendaItem.HearingItem(it, caseNazivById[it.caseId]) }
+            .map { AgendaItem.HearingItem(it, caseById[it.caseId]?.naziv, caseById[it.caseId]?.brojPredmeta) }
 
         val deadlineItems = deadlines
             .filter { it.status == DeadlineStatus.AKTIVAN }
-            .map { AgendaItem.DeadlineItem(it, caseNazivById[it.caseId]) }
+            .map { AgendaItem.DeadlineItem(it, caseById[it.caseId]?.naziv, caseById[it.caseId]?.brojPredmeta) }
 
         (hearingItems + deadlineItems).sortedBy { it.dateTime }
     }

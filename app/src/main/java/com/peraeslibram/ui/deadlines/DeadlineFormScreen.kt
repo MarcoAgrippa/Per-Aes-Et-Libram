@@ -132,11 +132,14 @@ fun DeadlineFormScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            val brojDanaError = viewModel.brojDanaError()
             OutlinedTextField(
                 value = viewModel.customBrojDana,
                 onValueChange = { viewModel.onCustomBrojDanaChanged(it) },
                 label = { Text("Broj dana (možete promeniti, npr. produženje roka)") },
                 leadingIcon = { Icon(Icons.Default.Numbers, contentDescription = null) },
+                isError = brojDanaError != null,
+                supportingText = brojDanaError?.let { { Text(it) } },
                 modifier = Modifier.fillMaxWidth()
             )
 

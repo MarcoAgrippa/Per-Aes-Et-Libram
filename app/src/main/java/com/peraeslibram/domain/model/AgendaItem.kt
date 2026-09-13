@@ -7,12 +7,12 @@ sealed interface AgendaItem {
     val dateTime: LocalDateTime
     val caseId: Long
 
-    data class HearingItem(val hearing: Hearing, val caseNaziv: String?) : AgendaItem {
+    data class HearingItem(val hearing: Hearing, val caseNaziv: String?, val caseBroj: String? = null) : AgendaItem {
         override val dateTime: LocalDateTime = hearing.datumVreme
         override val caseId: Long = hearing.caseId
     }
 
-    data class DeadlineItem(val deadline: Deadline, val caseNaziv: String?) : AgendaItem {
+    data class DeadlineItem(val deadline: Deadline, val caseNaziv: String?, val caseBroj: String? = null) : AgendaItem {
         override val dateTime: LocalDateTime = deadline.izracunatiKrajnjiDatum.atStartOfDay()
         override val caseId: Long = deadline.caseId
     }

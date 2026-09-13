@@ -69,10 +69,13 @@ import coil.compose.AsyncImage
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import com.peraeslibram.domain.model.HearingStatus
 import com.peraeslibram.domain.model.Prilog
 import com.peraeslibram.ui.common.IconBadge
 import com.peraeslibram.ui.common.SectionHeader
 import com.peraeslibram.ui.common.StatusChip
+import com.peraeslibram.ui.common.TagChip
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.launch
 
@@ -215,6 +218,14 @@ fun CaseDetailScreen(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        it.brojPredmeta?.let { broj ->
+                            TagChip(
+                                text = broj,
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                        }
                         InfoRow(icon = Icons.Default.Person, text = "Klijent: ${it.klijentIme}")
                         it.sud?.let { sud -> InfoRow(icon = Icons.Default.AccountBalance, text = "Sud: $sud") }
                         InfoRow(icon = Icons.Default.Business, text = "Vrsta postupka: ${it.tipPostupka}")
@@ -242,7 +253,16 @@ fun CaseDetailScreen(
                             size = 36.dp
                         )
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(hearing.datumVreme.format(dateTimeFormatter), style = MaterialTheme.typography.titleSmall)
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(hearing.datumVreme.format(dateTimeFormatter), style = MaterialTheme.typography.titleSmall)
+                                if (hearing.status == HearingStatus.ZAKAZANO) {
+                                    TagChip(
+                                        text = "ZAKAZANO",
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                }
+                            }
                             hearing.sud?.let {
                                 Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
@@ -295,9 +315,15 @@ fun CaseDetailScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            if (isIstekao) {
-                                StatusChip(
+                            when {
+                                isIstekao -> StatusChip(
                                     text = "ISTEKAO",
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                deadline.izracunatiKrajnjiDatum == LocalDate.now() -> StatusChip(
+                                    text = "POSLEDNJI DAN",
                                     containerColor = MaterialTheme.colorScheme.errorContainer,
                                     contentColor = MaterialTheme.colorScheme.onErrorContainer,
                                     modifier = Modifier.padding(top = 4.dp)
