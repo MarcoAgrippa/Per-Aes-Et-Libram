@@ -2,62 +2,93 @@ package com.peraeslibram.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Svetla tema — "pergament i bronza"
-val PrimaryLight = Color(0xFF1B3A57)
+// "Classical" tokeni (Claude Design, sistem "classical-b89e1c0d...") — editorijalski, mono-akcent
+// (bronza), bez punjenih površina. Vidi _ds/classical.../styles.css i readme.md za izvor.
+
+// Neutralna rampa (OKLCH, ista percepciona svetlina po koraku)
+val Neutral100 = Color(0xFFF8F4F4)
+val Neutral200 = Color(0xFFEAE7E7)
+val Neutral300 = Color(0xFFD7D3D3)
+val Neutral400 = Color(0xFFBAB6B6)
+val Neutral500 = Color(0xFF9B9797)
+val Neutral600 = Color(0xFF7D7979)
+val Neutral700 = Color(0xFF605D5D)
+val Neutral800 = Color(0xFF444141)
+val Neutral900 = Color(0xFF2D2B2B)
+
+// Akcentna rampa (bronza — jedini akcent u sistemu, mono šema)
+val Accent100 = Color(0xFFFFF3E4)
+val Accent200 = Color(0xFFFFE3BF)
+val Accent300 = Color(0xFFFACB8D)
+val Accent400 = Color(0xFFE1AD66)
+val Accent500 = Color(0xFFC28D41)
+val Accent600 = Color(0xFFA06F24)
+val Accent700 = Color(0xFF7D5411)
+val Accent800 = Color(0xFF5A3B0A)
+val Accent900 = Color(0xFF3A270D)
+
+val ColorText = Color(0xFF201F1D)
+val ColorBg = Color(0xFFF3F2F2)
+val ColorSurface = Color(0xFFEAE9E9)
+
+// Svetla tema
+val PrimaryLight = Accent500
 val OnPrimaryLight = Color(0xFFFFFFFF)
-val PrimaryContainerLight = Color(0xFFD5E3F0)
-val OnPrimaryContainerLight = Color(0xFF0D2136)
+val PrimaryContainerLight = Accent100
+val OnPrimaryContainerLight = Accent800
 
-val SecondaryLight = Color(0xFF8A6D3B)
+val SecondaryLight = Accent600
 val OnSecondaryLight = Color(0xFFFFFFFF)
-val SecondaryContainerLight = Color(0xFFF3E6CF)
-val OnSecondaryContainerLight = Color(0xFF4A3A1E)
+val SecondaryContainerLight = Neutral100
+val OnSecondaryContainerLight = Neutral800
 
-val TertiaryLight = Color(0xFF6E4A4A)
+val TertiaryLight = Accent600
 val OnTertiaryLight = Color(0xFFFFFFFF)
-val TertiaryContainerLight = Color(0xFFF6DEDE)
-val OnTertiaryContainerLight = Color(0xFF3C2222)
+val TertiaryContainerLight = Accent200
+val OnTertiaryContainerLight = Accent900
 
-val ErrorLight = Color(0xFFB3261E)
+// Nema crvene u "classical" tokenima (hitnost se signalizira akcentnom značkom) — ovo je
+// namerno pridržana, blago zatoplja crvena samo za destruktivne akcije (brisanje).
+val ErrorLight = Color(0xFFA23B2E)
 val OnErrorLight = Color(0xFFFFFFFF)
-val ErrorContainerLight = Color(0xFFF9DEDC)
-val OnErrorContainerLight = Color(0xFF410E0B)
+val ErrorContainerLight = Color(0xFFF7E3DD)
+val OnErrorContainerLight = Color(0xFF5C2A1E)
 
-val BackgroundLight = Color(0xFFFAF7F0)
-val OnBackgroundLight = Color(0xFF1C1B1A)
-val SurfaceLight = Color(0xFFFFFDF9)
-val OnSurfaceLight = Color(0xFF1C1B1A)
-val SurfaceVariantLight = Color(0xFFEDE6D9)
-val OnSurfaceVariantLight = Color(0xFF4D4639)
-val OutlineLight = Color(0xFF7C7567)
-val OutlineVariantLight = Color(0xFFD3CBBB)
+val BackgroundLight = ColorBg
+val OnBackgroundLight = ColorText
+val SurfaceLight = ColorSurface
+val OnSurfaceLight = ColorText
+val SurfaceVariantLight = Neutral100
+val OnSurfaceVariantLight = Neutral700
+val OutlineLight = Color(0x66201F1D) // ~40% — ivice/border koje moraju biti dovoljno vidljive
+val OutlineVariantLight = Color(0x29201F1D) // ~16% — --color-divider
 
-// Tamna tema
-val PrimaryDark = Color(0xFF9FC5E8)
-val OnPrimaryDark = Color(0xFF0B2740)
-val PrimaryContainerDark = Color(0xFF24425F)
-val OnPrimaryContainerDark = Color(0xFFD3E4F2)
+// Tamna tema (nije u mock-u; smišljena kao dosledan pandan istom akcentu)
+val PrimaryDark = Accent400
+val OnPrimaryDark = Accent900
+val PrimaryContainerDark = Accent800
+val OnPrimaryContainerDark = Accent100
 
-val SecondaryDark = Color(0xFFD9B382)
-val OnSecondaryDark = Color(0xFF3D2E12)
-val SecondaryContainerDark = Color(0xFF59431F)
-val OnSecondaryContainerDark = Color(0xFFF3E0C0)
+val SecondaryDark = Accent400
+val OnSecondaryDark = Accent900
+val SecondaryContainerDark = Neutral800
+val OnSecondaryContainerDark = Neutral200
 
-val TertiaryDark = Color(0xFFE0B6B6)
-val OnTertiaryDark = Color(0xFF442626)
-val TertiaryContainerDark = Color(0xFF5B3B3B)
-val OnTertiaryContainerDark = Color(0xFFF6DEDE)
+val TertiaryDark = Accent400
+val OnTertiaryDark = Accent900
+val TertiaryContainerDark = Accent800
+val OnTertiaryContainerDark = Accent100
 
-val ErrorDark = Color(0xFFF2B8B5)
-val OnErrorDark = Color(0xFF601410)
-val ErrorContainerDark = Color(0xFF8C1D18)
-val OnErrorContainerDark = Color(0xFFF9DEDC)
+val ErrorDark = Color(0xFFE0897A)
+val OnErrorDark = Color(0xFF3A140D)
+val ErrorContainerDark = Color(0xFF5C2A1E)
+val OnErrorContainerDark = Color(0xFFF7E3DD)
 
-val BackgroundDark = Color(0xFF17191B)
-val OnBackgroundDark = Color(0xFFE6E1D9)
-val SurfaceDark = Color(0xFF1F2124)
-val OnSurfaceDark = Color(0xFFE6E1D9)
-val SurfaceVariantDark = Color(0xFF46433B)
-val OnSurfaceVariantDark = Color(0xFFC9C2B4)
-val OutlineDark = Color(0xFF948E80)
-val OutlineVariantDark = Color(0xFF4D473A)
+val BackgroundDark = Color(0xFF1C1B1A)
+val OnBackgroundDark = Neutral200
+val SurfaceDark = Color(0xFF242322)
+val OnSurfaceDark = Neutral200
+val SurfaceVariantDark = Color(0xFF322F2D)
+val OnSurfaceVariantDark = Neutral400
+val OutlineDark = Color(0x66EAE7E7)
+val OutlineVariantDark = Color(0x29EAE7E7)

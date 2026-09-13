@@ -14,7 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
+import com.peraeslibram.ui.common.AccentButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,14 +81,13 @@ fun HolidayManagementScreen(
                 label = { Text("Naziv praznika") },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
-            Button(
+            AccentButton(
                 onClick = { viewModel.addManual() },
                 enabled = viewModel.canAdd(),
+                icon = Icons.Default.Add,
+                text = "Dodaj",
                 modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Dodaj")
-            }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(

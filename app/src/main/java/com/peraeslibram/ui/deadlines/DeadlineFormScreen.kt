@@ -18,7 +18,7 @@ import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
+import com.peraeslibram.ui.common.AccentButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -208,14 +208,13 @@ fun DeadlineFormScreen(
                 }
             }
 
-            Button(
+            AccentButton(
                 onClick = { viewModel.save(onSaved) },
                 enabled = viewModel.canSave(),
+                icon = Icons.Default.Check,
+                text = "Sačuvaj",
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
-            ) {
-                Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Sačuvaj")
-            }
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -182,6 +183,79 @@ fun SectionHeader(
     }
 }
 
+/** Kartica bez ispune, samo ivica — "Classical" konvencija (readme: "Cards are bordered, unfilled"). */
+@Composable
+fun ClassicalCard(
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Surface(
+        modifier = if (onClick != null) modifier.clickable(onClick = onClick) else modifier,
+        color = containerColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Column(content = content)
+    }
+}
+
+/** FAB kao ispisana pilula (ivica akcentom, bez ispune) — "Classical": boja kao potez, ne ispuna. */
+@Composable
+fun OutlinedFab(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.primary,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        shadowElevation = 3.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(icon, contentDescription = label)
+            Text(label, style = MaterialTheme.typography.labelLarge)
+        }
+    }
+}
+
+/** Primarna akcija — ivica akcentom, nikad ispuna (readme: "the primary is an accent outline, never a fill"). */
+@Composable
+fun AccentButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    text: String
+) {
+    androidx.compose.material3.OutlinedButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+        ),
+        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+    ) {
+        icon?.let {
+            Icon(it, contentDescription = null, modifier = Modifier.padding(end = 8.dp).size(18.dp))
+        }
+        Text(text, style = MaterialTheme.typography.labelLarge)
+    }
+}
+
 @Composable
 fun EmptyState(
     icon: ImageVector,
@@ -264,6 +338,33 @@ fun TagChip(
             text = text,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp)
+        )
+    }
+}
+
+/**
+ * Oznaka identifikatora bez ispune — samo ivica ("Classical" konvencija: boja kao potez, ne
+ * kao ispuna). Za broj predmeta u agendi/listama, gde [TagChip] (ispunjena) ostaje za statusne
+ * poruke poput "POSLEDNJI DAN".
+ */
+@Composable
+fun OutlineTag(
+    text: String,
+    modifier: Modifier = Modifier,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface
+) {
+    Surface(
+        color = Color.Transparent,
+        contentColor = contentColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
+        shape = RoundedCornerShape(2.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall.copy(fontFeatureSettings = "tnum"),
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
         )
     }
 }

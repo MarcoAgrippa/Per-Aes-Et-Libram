@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,10 +21,8 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.Court
 import com.peraeslibram.ui.common.EmptyState
-import com.peraeslibram.ui.common.IconBadge
+import com.peraeslibram.ui.common.OutlinedFab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,115 +68,112 @@ fun CourtListScreen(
                     IconButton(onClick = onOpenDrawer) {
                         Icon(Icons.Default.Menu, contentDescription = "Meni")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddCourt,
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Novi sud")
-            }
         }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = viewModel::onQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Pretraži sudove") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.onQueryChange("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Obriši pretragu")
+        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = viewModel::onQueryChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = { Text("Pretraži sudove") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = { viewModel.onQueryChange("") }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Obriši pretragu")
+                            }
                         }
-                    }
-                },
-                singleLine = true
-            )
+                    },
+                    singleLine = true
+                )
 
-            if (courts.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    EmptyState(
-                        icon = Icons.Default.AccountBalance,
-                        title = if (query.isBlank()) "Još nema sudova" else "Nema rezultata",
-                        subtitle = if (query.isBlank()) {
-                            "Dodajte prvi sud dugmetom + u donjem uglu."
-                        } else {
-                            "Nijedan sud ne odgovara pretrazi „$query“."
-                        }
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(courts, key = { it.id }) { court ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth().clickable { onEditCourt(court.id) },
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                IconBadge(
-                                    icon = Icons.Default.AccountBalance,
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(court.naziv, style = MaterialTheme.typography.titleMedium)
-                                    court.adresa?.let {
-                                        Text(it, style = MaterialTheme.typography.bodyMedium)
+                if (courts.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        EmptyState(
+                            icon = Icons.Default.AccountBalance,
+                            title = if (query.isBlank()) "Još nema sudova" else "Nema rezultata",
+                            subtitle = if (query.isBlank()) {
+                                "Dodajte prvi sud dugmetom + u donjem uglu."
+                            } else {
+                                "Nijedan sud ne odgovara pretrazi „$query“."
+                            }
+                        )
+                    }
+                } else {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(courts, key = { it.id }) { court ->
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onEditCourt(court.id) }
+                                        .padding(horizontal = 20.dp, vertical = 14.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(court.naziv, style = MaterialTheme.typography.titleMedium)
+                                        court.adresa?.let {
+                                            Text(
+                                                it,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        court.telefon?.let {
+                                            Text(
+                                                it,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        court.email?.let {
+                                            Text(
+                                                it,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
-                                    court.telefon?.let {
-                                        Text(
-                                            it,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                    if (!court.adresa.isNullOrBlank()) {
+                                        IconButton(onClick = {
+                                            val mapQuery = Uri.encode("${court.naziv}, ${court.adresa}")
+                                            val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$mapQuery")
+                                            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                                        }) {
+                                            Icon(
+                                                Icons.Default.Map,
+                                                contentDescription = "Otvori adresu na mapi",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
                                     }
-                                    court.email?.let {
-                                        Text(
-                                            it,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                                if (!court.adresa.isNullOrBlank()) {
-                                    IconButton(onClick = {
-                                        val mapQuery = Uri.encode("${court.naziv}, ${court.adresa}")
-                                        val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$mapQuery")
-                                        context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                                    }) {
+                                    IconButton(onClick = { pendingDelete = court }) {
                                         Icon(
-                                            Icons.Default.Map,
-                                            contentDescription = "Otvori adresu na mapi",
-                                            tint = MaterialTheme.colorScheme.primary
+                                            Icons.Default.Delete,
+                                            contentDescription = "Obriši sud",
+                                            tint = MaterialTheme.colorScheme.error
                                         )
                                     }
                                 }
-                                IconButton(onClick = { pendingDelete = court }) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Obriši sud",
-                                        tint = MaterialTheme.colorScheme.error
-                                    )
-                                }
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             }
                         }
                     }
                 }
             }
+
+            OutlinedFab(
+                onClick = onAddCourt,
+                icon = Icons.Default.Add,
+                label = "Novi sud",
+                modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp)
+            )
         }
     }
 

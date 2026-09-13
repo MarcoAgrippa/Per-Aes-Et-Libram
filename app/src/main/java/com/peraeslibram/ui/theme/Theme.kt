@@ -63,12 +63,14 @@ private val DarkColors = darkColorScheme(
     outlineVariant = OutlineVariantDark
 )
 
+// "Classical" radijus je gotovo pravougaon (--radius-sm/md/lg: 2/4/7px) — namerno tesna
+// skala, suprotno od zaobljenog M3 "expressive" izgleda koji je ovde ranije stajao.
 private val PerAesEtLibramShapes = Shapes(
-    extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(10.dp),
-    medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(28.dp)
+    extraSmall = RoundedCornerShape(2.dp),
+    small = RoundedCornerShape(3.dp),
+    medium = RoundedCornerShape(4.dp),
+    large = RoundedCornerShape(6.dp),
+    extraLarge = RoundedCornerShape(8.dp)
 )
 
 @Composable

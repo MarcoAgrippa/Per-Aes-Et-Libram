@@ -31,18 +31,16 @@ import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.HourglassBottom
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -50,6 +48,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,7 +58,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -71,9 +69,8 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.peraeslibram.domain.model.HearingStatus
 import com.peraeslibram.domain.model.Prilog
-import com.peraeslibram.ui.common.IconBadge
+import com.peraeslibram.ui.common.AccentButton
 import com.peraeslibram.ui.common.SectionHeader
-import com.peraeslibram.ui.common.StatusChip
 import com.peraeslibram.ui.common.TagChip
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -198,7 +195,8 @@ fun CaseDetailScreen(
                             Icon(Icons.Default.Edit, contentDescription = "Izmeni predmet")
                         }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -210,139 +208,84 @@ fun CaseDetailScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             case?.let {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 18.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        it.brojPredmeta?.let { broj ->
-                            TagChip(
-                                text = broj,
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                        }
-                        InfoRow(icon = Icons.Default.Person, text = "Klijent: ${it.klijentIme}")
-                        it.sud?.let { sud -> InfoRow(icon = Icons.Default.AccountBalance, text = "Sud: $sud") }
-                        InfoRow(icon = Icons.Default.Business, text = "Vrsta postupka: ${it.tipPostupka}")
+                    it.brojPredmeta?.let { broj ->
+                        Text(
+                            broj,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
+                    Text(it.naziv, style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        listOfNotNull(it.klijentIme, it.sud, it.tipPostupka.name).joinToString(" · "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
             SectionHeader(title = "Ročišta", icon = Icons.Default.Gavel)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             hearings.forEach { hearing ->
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                        .clickable { onEditHearing(viewModel.caseId, hearing.id) },
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        IconBadge(
-                            icon = Icons.Default.Gavel,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            size = 36.dp
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(hearing.datumVreme.format(dateTimeFormatter), style = MaterialTheme.typography.titleSmall)
-                                if (hearing.status == HearingStatus.ZAKAZANO) {
-                                    TagChip(
-                                        text = "ZAKAZANO",
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                    )
-                                }
-                            }
-                            hearing.sud?.let {
-                                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                        IconButton(onClick = { viewModel.deleteHearing(hearing) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Obriši ročište", tint = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                }
+                val isPast = hearing.status != HearingStatus.ZAKAZANO
+                CaseTimelineRow(
+                    onClick = { onEditHearing(viewModel.caseId, hearing.id) },
+                    onDelete = { viewModel.deleteHearing(hearing) },
+                    deleteDescription = "Obriši ročište",
+                    dimmed = isPast,
+                    dateText = hearing.datumVreme.format(dateTimeFormatter),
+                    title = hearing.tipRocista ?: "Ročište",
+                    caption = listOfNotNull(
+                        hearing.sud,
+                        if (isPast) "održano" else null
+                    ).joinToString(" · ").ifBlank { null }
+                )
             }
-            OutlinedButton(
+            AccentButton(
                 onClick = { onAddHearing(viewModel.caseId) },
+                icon = Icons.Default.Add,
+                text = "Dodaj ročište",
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Dodaj ročište")
-            }
-            OutlinedButton(
+            )
+            AccentButton(
                 onClick = { requestScanOrLaunch(::launchSummonsScanner) },
+                icon = Icons.Default.DocumentScanner,
+                text = "Skeniraj poziv",
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-            ) {
-                Icon(Icons.Default.DocumentScanner, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Skeniraj poziv")
-            }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
             SectionHeader(title = "Rokovi", icon = Icons.Default.HourglassBottom)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             deadlines.forEach { deadline ->
                 val isIstekao = deadline.isIstekao()
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                        .clickable { onEditDeadline(viewModel.caseId, deadline.id) },
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        IconBadge(
-                            icon = if (isIstekao) Icons.Default.EventBusy else Icons.Default.HourglassBottom,
-                            containerColor = if (isIstekao) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = if (isIstekao) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSecondaryContainer,
-                            size = 36.dp
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(deadline.nazivRadnjePrikaz, style = MaterialTheme.typography.titleSmall)
-                            Text(
-                                "Krajnji datum: ${deadline.izracunatiKrajnjiDatum.format(dateFormatter)}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            when {
-                                isIstekao -> StatusChip(
-                                    text = "ISTEKAO",
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                                deadline.izracunatiKrajnjiDatum == LocalDate.now() -> StatusChip(
-                                    text = "POSLEDNJI DAN",
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                            }
-                        }
-                        IconButton(onClick = { viewModel.deleteDeadline(deadline) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Obriši rok", tint = MaterialTheme.colorScheme.error)
-                        }
+                val isLastDay = deadline.izracunatiKrajnjiDatum == LocalDate.now()
+                CaseTimelineRow(
+                    onClick = { onEditDeadline(viewModel.caseId, deadline.id) },
+                    onDelete = { viewModel.deleteDeadline(deadline) },
+                    deleteDescription = "Obriši rok",
+                    dimmed = false,
+                    dateText = "Krajnji datum: ${deadline.izracunatiKrajnjiDatum.format(dateFormatter)}",
+                    title = deadline.nazivRadnjePrikaz,
+                    urgentLabel = when {
+                        isIstekao -> "istekao"
+                        isLastDay -> "poslednji dan"
+                        else -> null
                     }
-                }
+                )
             }
-            OutlinedButton(
+            AccentButton(
                 onClick = { onAddDeadline(viewModel.caseId) },
+                icon = Icons.Default.Add,
+                text = "Dodaj rok",
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Dodaj rok")
-            }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
             SectionHeader(title = "Prilozi", icon = Icons.Default.AttachFile)
@@ -365,11 +308,49 @@ fun CaseDetailScreen(
     }
 }
 
+/** Red ročišta/roka u detaljima predmeta — tačka umesto ikone-bedža, ivica ispod umesto kartice. */
 @Composable
-private fun InfoRow(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.height(18.dp))
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+private fun CaseTimelineRow(
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    deleteDescription: String,
+    dimmed: Boolean,
+    dateText: String,
+    title: String,
+    caption: String? = null,
+    urgentLabel: String? = null
+) {
+    val emphasisColor = if (dimmed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Box(modifier = Modifier.padding(top = 7.dp).size(7.dp)) {
+                androidx.compose.foundation.Canvas(modifier = Modifier.size(7.dp)) {
+                    drawCircle(color = emphasisColor)
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(dateText, style = MaterialTheme.typography.bodySmall, color = emphasisColor)
+                Text(title, style = if (dimmed) MaterialTheme.typography.titleMedium.copy(color = emphasisColor) else MaterialTheme.typography.titleMedium)
+                caption?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                urgentLabel?.let {
+                    TagChip(
+                        text = it,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(top = 6.dp)
+                    )
+                }
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = deleteDescription, tint = MaterialTheme.colorScheme.error)
+            }
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

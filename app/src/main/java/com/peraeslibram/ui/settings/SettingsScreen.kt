@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +16,6 @@ import androidx.compose.material.icons.filled.BatterySaver
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,13 +23,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.peraeslibram.ui.common.IconBadge
+import com.peraeslibram.ui.common.ClassicalCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +48,8 @@ fun SettingsScreen(
                     IconButton(onClick = onOpenDrawer) {
                         Icon(Icons.Default.Menu, contentDescription = "Meni")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
     ) { padding ->
@@ -58,19 +57,16 @@ fun SettingsScreen(
             modifier = Modifier.padding(padding).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth().clickable { onOpenHolidays() }
+            ClassicalCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onOpenHolidays
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    IconBadge(
-                        icon = Icons.Default.CalendarMonth,
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Upravljanje praznicima", style = MaterialTheme.typography.titleMedium)
                         Text(
@@ -86,35 +82,32 @@ fun SettingsScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val alarmManager = context.getSystemService(AlarmManager::class.java)
                 if (alarmManager?.canScheduleExactAlarms() == false) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
+                    ClassicalCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        borderColor = MaterialTheme.colorScheme.error,
+                        onClick = {
                             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                                 data = "package:${context.packageName}".toUri()
                             }
                             context.startActivity(intent)
-                        },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                        }
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp).fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
-                            IconBadge(
-                                icon = Icons.Default.AlarmOn,
-                                containerColor = MaterialTheme.colorScheme.onErrorContainer,
-                                contentColor = MaterialTheme.colorScheme.errorContainer
-                            )
+                            Icon(Icons.Default.AlarmOn, contentDescription = null, tint = MaterialTheme.colorScheme.error)
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     "Dozvola za tačne alarme nije uključena",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                    color = MaterialTheme.colorScheme.error
                                 )
                                 Text(
                                     "Bez ove dozvole podsetnici za ročišta i rokove neće stizati na tačno vreme. Dodirnite da uključite.",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -122,16 +115,12 @@ fun SettingsScreen(
                 }
             }
 
-            Card(modifier = Modifier.fillMaxWidth()) {
+            ClassicalCard(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    IconBadge(
-                        icon = Icons.Default.BatterySaver,
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    Icon(Icons.Default.BatterySaver, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Ušteda baterije", style = MaterialTheme.typography.titleMedium)
                         Text(

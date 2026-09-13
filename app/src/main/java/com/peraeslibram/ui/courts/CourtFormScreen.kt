@@ -18,7 +18,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
+import com.peraeslibram.ui.common.AccentButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -117,14 +117,13 @@ fun CourtFormScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(
+            AccentButton(
                 onClick = { viewModel.save(onSaved) },
                 enabled = viewModel.canSave(),
+                icon = Icons.Default.Check,
+                text = "Sačuvaj",
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
-            ) {
-                Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-                Text("Sačuvaj")
-            }
+            )
         }
     }
 }
