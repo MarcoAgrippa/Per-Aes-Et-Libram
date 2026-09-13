@@ -11,10 +11,12 @@ import com.peraeslibram.data.local.dao.DeadlineDao
 import com.peraeslibram.data.local.dao.DeadlineRuleDao
 import com.peraeslibram.data.local.dao.HearingDao
 import com.peraeslibram.data.local.dao.NonWorkingDayDao
+import com.peraeslibram.data.local.dao.NotaryDao
 import com.peraeslibram.data.local.dao.PrilogDao
 import com.peraeslibram.data.local.dao.ReminderDao
 import com.peraeslibram.data.local.migration.MIGRATION_1_2
 import com.peraeslibram.data.local.migration.MIGRATION_2_3
+import com.peraeslibram.data.local.migration.MIGRATION_3_4
 import com.peraeslibram.data.local.seed.DatabaseSeeder
 import dagger.Module
 import dagger.Provides
@@ -34,7 +36,7 @@ object DatabaseModule {
         @ApplicationContext context: Context,
         seederProvider: Provider<DatabaseSeeder>
     ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
@@ -66,4 +68,7 @@ object DatabaseModule {
 
     @Provides
     fun provideCourtDao(db: AppDatabase): CourtDao = db.courtDao()
+
+    @Provides
+    fun provideNotaryDao(db: AppDatabase): NotaryDao = db.notaryDao()
 }

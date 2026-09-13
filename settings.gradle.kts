@@ -10,6 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Tesseract4Android (ćirilični OCR) se distribuira preko JitPack-a, nije na Maven Central.
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

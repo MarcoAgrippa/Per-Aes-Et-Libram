@@ -10,6 +10,7 @@ import com.peraeslibram.data.local.dao.DeadlineDao
 import com.peraeslibram.data.local.dao.DeadlineRuleDao
 import com.peraeslibram.data.local.dao.HearingDao
 import com.peraeslibram.data.local.dao.NonWorkingDayDao
+import com.peraeslibram.data.local.dao.NotaryDao
 import com.peraeslibram.data.local.dao.PrilogDao
 import com.peraeslibram.data.local.dao.ReminderDao
 import com.peraeslibram.data.local.entity.CaseEntity
@@ -18,6 +19,7 @@ import com.peraeslibram.data.local.entity.DeadlineEntity
 import com.peraeslibram.data.local.entity.DeadlineRuleEntity
 import com.peraeslibram.data.local.entity.HearingEntity
 import com.peraeslibram.data.local.entity.NonWorkingDayEntity
+import com.peraeslibram.data.local.entity.NotaryEntity
 import com.peraeslibram.data.local.entity.PrilogEntity
 import com.peraeslibram.data.local.entity.ReminderEntity
 
@@ -30,9 +32,10 @@ import com.peraeslibram.data.local.entity.ReminderEntity
         NonWorkingDayEntity::class,
         ReminderEntity::class,
         PrilogEntity::class,
-        CourtEntity::class
+        CourtEntity::class,
+        NotaryEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -45,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
     abstract fun prilogDao(): PrilogDao
     abstract fun courtDao(): CourtDao
+    abstract fun notaryDao(): NotaryDao
 
     companion object {
         const val DATABASE_NAME = "per_aes_et_libram.db"

@@ -39,6 +39,8 @@ class DatabaseSeeder @Inject constructor(
             db.nonWorkingDayDao().insertAll(holidayEntities)
 
             db.courtDao().insertAll(CourtSeedData.defaultCourts().map { it.toEntity() })
+
+            db.notaryDao().insertAll(NotarySeedData.defaultNotaries().map { it.toEntity() })
         }
     }
 }

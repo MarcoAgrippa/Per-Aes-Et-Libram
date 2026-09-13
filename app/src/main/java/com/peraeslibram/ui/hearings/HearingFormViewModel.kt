@@ -7,8 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.peraeslibram.app.NEW_ID
+import com.peraeslibram.domain.model.Court
 import com.peraeslibram.domain.model.Hearing
 import com.peraeslibram.domain.model.HearingStatus
+import com.peraeslibram.domain.repository.CaseRepository
+import com.peraeslibram.domain.repository.CourtRepository
 import com.peraeslibram.domain.repository.HearingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
@@ -16,6 +19,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class ReminderOption(val minutesBefore: Long, val label: String)
@@ -52,7 +60,10 @@ val HEARING_TYPE_OPTIONS = listOf(
 @HiltViewModel
 class HearingFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val hearingRepository: HearingRepository
+    private val hearingRepository: HearingRepository,
+    private val caseRepository: CaseRepository,
+    private val courtRepository: CourtRepository,
+    private val pendingSummonsPrefill: PendingSummonsPrefill
 ) : ViewModel() {
 
     val caseId: Long = checkNotNull(savedStateHandle.get<Long>("caseId"))
@@ -61,12 +72,36 @@ class HearingFormViewModel @Inject constructor(
     var datum by mutableStateOf<LocalDate?>(null)
     var vreme by mutableStateOf<LocalTime?>(null)
     var sud by mutableStateOf("")
+        private set
     var sudnica by mutableStateOf("")
     var tipRocista by mutableStateOf("")
     var napomena by mutableStateOf("")
     var reminderOffsets by mutableStateOf(setOf(1440L))
 
+    /** Sirov OCR tekst skeniranog poziva, za ručnu proveru — postavljen samo ako je forma
+     * otvorena posle skeniranja. Nikad se ne koristi za automatsko čuvanje. */
+    var ocrRawText by mutableStateOf<String?>(null)
+        private set
+
+    /** Upozorenje kad broj predmeta prepoznat na pozivu ne odgovara broju predmeta iz sistema —
+     * znak da je možda skeniran poziv za pogrešan predmet. */
+    var caseNumberMismatchWarning by mutableStateOf<String?>(null)
+        private set
+
     private var existing: Hearing? = null
+
+    private val courtQuery = MutableStateFlow("")
+
+    val courtSuggestions: StateFlow<List<Court>> = combine(
+        courtRepository.observeAll(),
+        courtQuery
+    ) { courts, query ->
+        if (query.isBlank()) {
+            emptyList()
+        } else {
+            courts.filter { it.naziv.contains(query, ignoreCase = true) }.take(5)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         if (hearingId != NEW_ID) {
@@ -81,7 +116,35 @@ class HearingFormViewModel @Inject constructor(
                     napomena = h.napomena.orEmpty()
                 }
             }
+        } else {
+            pendingSummonsPrefill.take()?.let { prefill ->
+                datum = prefill.datum
+                vreme = prefill.vreme
+                sud = prefill.sud.orEmpty()
+                sudnica = prefill.sudnica.orEmpty()
+                tipRocista = prefill.tipRocista.orEmpty()
+                ocrRawText = prefill.rawText
+                viewModelScope.launch {
+                    val brojPredmeta = prefill.brojPredmeta ?: return@launch
+                    val case = caseRepository.getById(caseId) ?: return@launch
+                    val postojeci = case.brojPredmeta
+                    if (!postojeci.isNullOrBlank() && !postojeci.equals(brojPredmeta, ignoreCase = true)) {
+                        caseNumberMismatchWarning =
+                            "Broj predmeta na pozivu ($brojPredmeta) se ne poklapa sa brojem u sistemu ($postojeci) — proverite da li je ovo pravi predmet."
+                    }
+                }
+            }
         }
+    }
+
+    fun onSudChange(value: String) {
+        sud = value
+        courtQuery.value = value
+    }
+
+    fun selectCourt(court: Court) {
+        sud = court.naziv
+        courtQuery.value = ""
     }
 
     fun toggleReminder(minutes: Long) {

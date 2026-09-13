@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Settings
@@ -33,6 +34,7 @@ val TOP_LEVEL_ROUTES: Set<String> = setOf(
     Routes.CASES,
     Routes.DEADLINES,
     Routes.COURTS,
+    Routes.NOTARIES,
     Routes.SETTINGS
 )
 
@@ -44,7 +46,8 @@ private enum class DrawerDestination(
     DASHBOARD(Routes.DASHBOARD, "Početna", Icons.Default.Home),
     CASES(Routes.CASES, "Predmeti", Icons.Default.Business),
     DEADLINES(Routes.DEADLINES, "Rokovi", Icons.Default.HourglassBottom),
-    COURTS(Routes.COURTS, "Sudovi", Icons.Default.AccountBalance)
+    COURTS(Routes.COURTS, "Sudovi", Icons.Default.AccountBalance),
+    NOTARIES(Routes.NOTARIES, "Javni beležnici", Icons.Default.Description)
 }
 
 @Composable

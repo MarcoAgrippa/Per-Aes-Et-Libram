@@ -25,6 +25,8 @@ import com.peraeslibram.ui.dashboard.DashboardScreen
 import com.peraeslibram.ui.deadlines.DeadlineFormScreen
 import com.peraeslibram.ui.deadlines.DeadlineListScreen
 import com.peraeslibram.ui.hearings.HearingFormScreen
+import com.peraeslibram.ui.notaries.NotaryFormScreen
+import com.peraeslibram.ui.notaries.NotaryListScreen
 import com.peraeslibram.ui.settings.HolidayManagementScreen
 import com.peraeslibram.ui.settings.SettingsScreen
 import kotlinx.coroutines.launch
@@ -42,6 +44,8 @@ object Routes {
     const val DEADLINES = "deadlines"
     const val COURTS = "courts"
     const val COURT_FORM = "court_form/{courtId}"
+    const val NOTARIES = "notaries"
+    const val NOTARY_FORM = "notary_form/{notaryId}"
     const val SETTINGS = "settings"
     const val HOLIDAYS = "holidays"
     const val ATTACHMENT_VIEWER = "attachment_viewer/{caseId}/{prilogId}"
@@ -51,6 +55,7 @@ object Routes {
     fun hearingForm(caseId: Long, hearingId: Long = NEW_ID) = "hearing_form/$caseId/$hearingId"
     fun deadlineForm(caseId: Long, deadlineId: Long = NEW_ID) = "deadline_form/$caseId/$deadlineId"
     fun courtForm(courtId: Long = NEW_ID) = "court_form/$courtId"
+    fun notaryForm(notaryId: Long = NEW_ID) = "notary_form/$notaryId"
     fun attachmentViewer(caseId: Long, prilogId: Long) = "attachment_viewer/$caseId/$prilogId"
 }
 
@@ -130,7 +135,8 @@ fun AppNavGraph() {
                     onEditHearing = { caseId, hearingId -> navController.navigate(Routes.hearingForm(caseId, hearingId)) },
                     onAddDeadline = { caseId -> navController.navigate(Routes.deadlineForm(caseId)) },
                     onEditDeadline = { caseId, deadlineId -> navController.navigate(Routes.deadlineForm(caseId, deadlineId)) },
-                    onOpenAttachment = { caseId, prilogId -> navController.navigate(Routes.attachmentViewer(caseId, prilogId)) }
+                    onOpenAttachment = { caseId, prilogId -> navController.navigate(Routes.attachmentViewer(caseId, prilogId)) },
+                    onScanSummons = { caseId -> navController.navigate(Routes.hearingForm(caseId)) }
                 )
             }
             composable(
@@ -177,6 +183,22 @@ fun AppNavGraph() {
                 arguments = listOf(navArgument("courtId") { type = NavType.LongType })
             ) {
                 CourtFormScreen(
+                    onSaved = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Routes.NOTARIES) {
+                NotaryListScreen(
+                    onOpenDrawer = openDrawer,
+                    onAddNotary = { navController.navigate(Routes.notaryForm()) },
+                    onEditNotary = { notaryId -> navController.navigate(Routes.notaryForm(notaryId)) }
+                )
+            }
+            composable(
+                Routes.NOTARY_FORM,
+                arguments = listOf(navArgument("notaryId") { type = NavType.LongType })
+            ) {
+                NotaryFormScreen(
                     onSaved = { navController.popBackStack() },
                     onBack = { navController.popBackStack() }
                 )

@@ -1,10 +1,12 @@
 package com.peraeslibram.ui.hearings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -13,11 +15,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,11 +33,13 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +78,21 @@ fun HearingFormScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            viewModel.caseNumberMismatchWarning?.let { warning ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.WarningAmber, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                        Text(warning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+                    }
+                }
+            }
             DatePickerField(
                 label = "Datum ročišta *",
                 value = viewModel.datum,
@@ -80,14 +105,44 @@ fun HearingFormScreen(
                 onValueChange = { viewModel.vreme = it },
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = viewModel.sud,
-                onValueChange = { viewModel.sud = it },
-                label = { Text("Sud") },
-                leadingIcon = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            val courtSuggestions by viewModel.courtSuggestions.collectAsState()
+            var sudMenuExpanded by remember { mutableStateOf(false) }
+            val sudExpanded = sudMenuExpanded && courtSuggestions.isNotEmpty()
+            ExposedDropdownMenuBox(
+                expanded = sudExpanded,
+                onExpandedChange = { sudMenuExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = viewModel.sud,
+                    onValueChange = {
+                        viewModel.onSudChange(it)
+                        sudMenuExpanded = true
+                    },
+                    label = { Text("Sud") },
+                    leadingIcon = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
+                    trailingIcon = {
+                        if (courtSuggestions.isNotEmpty()) {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = sudExpanded)
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = sudExpanded,
+                    onDismissRequest = { sudMenuExpanded = false }
+                ) {
+                    courtSuggestions.forEach { court ->
+                        DropdownMenuItem(
+                            text = { Text(court.naziv) },
+                            onClick = {
+                                viewModel.selectCourt(court)
+                                sudMenuExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
             OutlinedTextField(
                 value = viewModel.sudnica,
                 onValueChange = { viewModel.sudnica = it },
@@ -134,6 +189,8 @@ fun HearingFormScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            viewModel.ocrRawText?.let { rawText -> OcrTextSection(rawText) }
+
             Spacer(modifier = Modifier.height(4.dp))
             SectionHeader(title = "Podsetnici", icon = Icons.Default.NotificationsActive)
             HEARING_REMINDER_OPTIONS.forEach { option ->
@@ -153,6 +210,42 @@ fun HearingFormScreen(
             ) {
                 Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                 Text("Sačuvaj")
+            }
+        }
+    }
+}
+
+@Composable
+private fun OcrTextSection(rawText: String) {
+    var expanded by remember { mutableStateOf(false) }
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.DocumentScanner, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                    Text("Prepoznat tekst sa poziva (za proveru)", style = MaterialTheme.typography.labelLarge)
+                }
+                Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null)
+            }
+            if (expanded) {
+                Text(
+                    "Automatsko prepoznavanje teksta nije uvek tačno — polja iznad proverite pre čuvanja.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                )
+                Text(
+                    rawText,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 200.dp)
+                        .verticalScroll(rememberScrollState())
+                )
             }
         }
     }

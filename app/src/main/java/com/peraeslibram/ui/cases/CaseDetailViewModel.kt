@@ -9,10 +9,14 @@ import com.peraeslibram.domain.model.Case
 import com.peraeslibram.domain.model.Deadline
 import com.peraeslibram.domain.model.Hearing
 import com.peraeslibram.domain.model.Prilog
+import com.peraeslibram.domain.ocr.SummonsParser
+import com.peraeslibram.domain.ocr.TextRecognizer
 import com.peraeslibram.domain.repository.CaseRepository
 import com.peraeslibram.domain.repository.DeadlineRepository
 import com.peraeslibram.domain.repository.HearingRepository
 import com.peraeslibram.domain.repository.PrilogRepository
+import com.peraeslibram.ui.hearings.PendingSummonsPrefill
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.time.Instant
@@ -33,7 +37,11 @@ class CaseDetailViewModel @Inject constructor(
     private val hearingRepository: HearingRepository,
     private val deadlineRepository: DeadlineRepository,
     private val prilogRepository: PrilogRepository,
-    private val attachmentFileStore: AttachmentFileStore
+    private val attachmentFileStore: AttachmentFileStore,
+    // `Lazy`, da gradnja ViewModel-a (a time i otvaranje ekrana predmeta) ne konstruiše
+    // ML Kit prepoznavač — treba tek onome ko stvarno skenira poziv.
+    private val textRecognizer: Lazy<TextRecognizer>,
+    private val pendingSummonsPrefill: PendingSummonsPrefill
 ) : ViewModel() {
 
     val caseId: Long = checkNotNull(savedStateHandle.get<Long>("caseId"))
@@ -76,6 +84,26 @@ class CaseDetailViewModel @Inject constructor(
                     Prilog(caseId = caseId, naziv = naziv, fileName = destination.name, datumKreiranja = timestamp)
                 )
             }
+        }
+    }
+
+    /**
+     * Fotografija poziva postaje i prilog uz predmet (dokaz da je poziv uručen) i ulaz za OCR.
+     * Prepoznati podaci se ostavljaju u [pendingSummonsPrefill] da ih [onReady] pokupi otvaranjem
+     * forme za novo ročište — korisnik uvek mora da ih pregleda i potvrdi pre čuvanja.
+     */
+    fun scanSummons(pageUri: Uri, onReady: () -> Unit) {
+        viewModelScope.launch {
+            val timestamp = Instant.now()
+            val label = timestamp.atZone(ZoneId.systemDefault()).format(attachmentDateTimeFormatter)
+            val destination = attachmentFileStore.importPage(caseId, pageUri)
+            prilogRepository.save(
+                Prilog(caseId = caseId, naziv = "Poziv $label", fileName = destination.name, datumKreiranja = timestamp)
+            )
+
+            val text = runCatching { textRecognizer.get().recognize(pageUri) }.getOrDefault("")
+            pendingSummonsPrefill.set(SummonsParser.parse(text))
+            onReady()
         }
     }
 

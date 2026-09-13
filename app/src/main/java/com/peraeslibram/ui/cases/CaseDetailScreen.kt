@@ -89,6 +89,7 @@ fun CaseDetailScreen(
     onAddDeadline: (Long) -> Unit,
     onEditDeadline: (Long, Long) -> Unit,
     onOpenAttachment: (Long, Long) -> Unit,
+    onScanSummons: (Long) -> Unit,
     viewModel: CaseDetailViewModel = hiltViewModel()
 ) {
     val case by viewModel.case.collectAsState()
@@ -111,6 +112,20 @@ fun CaseDetailScreen(
         }
     }
 
+    // Poziv je jedna strana — ograničavamo na jednu stranicu i posle skeniranja idemo
+    // pravo na OCR + prefill ročišta, umesto dodavanja u listu priloga kao obična stranica.
+    val summonsScannerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val scanResult = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+            val pageUri = scanResult?.pages?.firstOrNull()?.imageUri
+            if (pageUri != null) {
+                viewModel.scanSummons(pageUri) { onScanSummons(viewModel.caseId) }
+            }
+        }
+    }
+
     fun launchScanner() {
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(true)
@@ -127,20 +142,40 @@ fun CaseDetailScreen(
             }
     }
 
+    fun launchSummonsScanner() {
+        val options = GmsDocumentScannerOptions.Builder()
+            .setGalleryImportAllowed(true)
+            .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+            .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+            .setPageLimit(1)
+            .build()
+        GmsDocumentScanning.getClient(options)
+            .getStartScanIntent(activity)
+            .addOnSuccessListener { intentSender ->
+                summonsScannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+            }
+            .addOnFailureListener {
+                scope.launch { snackbarHostState.showSnackbar("Skener nije dostupan na ovom uređaju") }
+            }
+    }
+
+    var pendingScanAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            launchScanner()
+            pendingScanAction?.invoke()
         } else {
             scope.launch { snackbarHostState.showSnackbar("Dozvola za kameru je odbijena") }
         }
+        pendingScanAction = null
     }
 
-    fun requestScanOrLaunch() {
+    fun requestScanOrLaunch(action: () -> Unit) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            launchScanner()
+            action()
         } else {
+            pendingScanAction = action
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
@@ -225,6 +260,13 @@ fun CaseDetailScreen(
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                 Text("Dodaj ročište")
             }
+            OutlinedButton(
+                onClick = { requestScanOrLaunch(::launchSummonsScanner) },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            ) {
+                Icon(Icons.Default.DocumentScanner, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                Text("Skeniraj poziv")
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
             SectionHeader(title = "Rokovi", icon = Icons.Default.HourglassBottom)
@@ -290,7 +332,7 @@ fun CaseDetailScreen(
                     )
                 }
                 item {
-                    AddAttachmentTile(onClick = ::requestScanOrLaunch)
+                    AddAttachmentTile(onClick = { requestScanOrLaunch(::launchScanner) })
                 }
             }
         }
