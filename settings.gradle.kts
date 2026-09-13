@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PerAesEtLibram"
 include(":app")
+include(":baselineprofile")

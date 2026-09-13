@@ -10,5 +10,6 @@
 local.properties
 /app/build
 /app/release
+/baselineprofile/build
 *.hprof
 .kotlin/
