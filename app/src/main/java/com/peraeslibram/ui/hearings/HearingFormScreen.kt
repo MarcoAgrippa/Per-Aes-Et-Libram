@@ -19,7 +19,10 @@ import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +30,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -89,14 +96,36 @@ fun HearingFormScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = viewModel.tipRocista,
-                onValueChange = { viewModel.tipRocista = it },
-                label = { Text("Vrsta ročišta (npr. glavni pretres)") },
-                leadingIcon = { Icon(Icons.Default.Gavel, contentDescription = null) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            var tipMenuExpanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(
+                expanded = tipMenuExpanded,
+                onExpandedChange = { tipMenuExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = viewModel.tipRocista,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Vrsta ročišta") },
+                    leadingIcon = { Icon(Icons.Default.Gavel, contentDescription = null) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tipMenuExpanded) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = tipMenuExpanded,
+                    onDismissRequest = { tipMenuExpanded = false }
+                ) {
+                    HEARING_TYPE_OPTIONS.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option) },
+                            onClick = {
+                                viewModel.tipRocista = option
+                                tipMenuExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
             OutlinedTextField(
                 value = viewModel.napomena,
                 onValueChange = { viewModel.napomena = it },

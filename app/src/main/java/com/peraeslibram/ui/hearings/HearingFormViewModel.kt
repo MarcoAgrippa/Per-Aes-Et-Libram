@@ -27,6 +27,28 @@ val HEARING_REMINDER_OPTIONS = listOf(
     ReminderOption(30, "30 minuta pre")
 )
 
+/**
+ * Uobičajene vrste ročišta u domaćoj sudskoj praksi, obuhvataju parnični, krivični,
+ * prekršajni, upravni i izvršni postupak. "Ostalo" ostaje kao izlaz za slučajeve koji ne
+ * odgovaraju nijednoj od ponuđenih vrednosti.
+ */
+val HEARING_TYPE_OPTIONS = listOf(
+    "Pripremno ročište",
+    "Ročište za glavnu raspravu",
+    "Glavni pretres",
+    "Ročište za izjašnjenje o krivici",
+    "Ročište za saslušanje svedoka",
+    "Ročište za veštačenje",
+    "Ročište za poravnanje",
+    "Ročište za objavljivanje presude",
+    "Usmena rasprava (upravni spor)",
+    "Ročište u prekršajnom postupku",
+    "Ročište u izvršnom postupku",
+    "Ročište za javnu prodaju",
+    "Ročište pred drugostepenim sudom",
+    "Ostalo"
+)
+
 @HiltViewModel
 class HearingFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
