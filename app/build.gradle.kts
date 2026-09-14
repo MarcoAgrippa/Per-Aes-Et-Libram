@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.mlkit.document.scanner)
     implementation(libs.tesseract4android)
     implementation(libs.coil.compose)
+    implementation(libs.datastore.preferences)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

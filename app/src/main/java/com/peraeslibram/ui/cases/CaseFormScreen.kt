@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import com.peraeslibram.ui.common.AccentButton
+import com.peraeslibram.ui.common.Text
+import com.peraeslibram.ui.common.displayText
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -25,9 +27,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.TipPostupka
+import com.peraeslibram.domain.model.label
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,14 +98,44 @@ fun CaseFormScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = viewModel.sud,
-                onValueChange = { viewModel.sud = it },
-                label = { Text("Sud") },
-                leadingIcon = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            val courtSuggestions by viewModel.courtSuggestions.collectAsState()
+            var sudMenuExpanded by remember { mutableStateOf(false) }
+            val sudExpanded = sudMenuExpanded && courtSuggestions.isNotEmpty()
+            ExposedDropdownMenuBox(
+                expanded = sudExpanded,
+                onExpandedChange = { sudMenuExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = displayText(viewModel.sud),
+                    onValueChange = {
+                        viewModel.onSudChange(it)
+                        sudMenuExpanded = true
+                    },
+                    label = { Text("Sud") },
+                    leadingIcon = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
+                    trailingIcon = {
+                        if (courtSuggestions.isNotEmpty()) {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = sudExpanded)
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    expanded = sudExpanded,
+                    onDismissRequest = { sudMenuExpanded = false }
+                ) {
+                    courtSuggestions.forEach { court ->
+                        DropdownMenuItem(
+                            text = { Text(court.naziv) },
+                            onClick = {
+                                viewModel.selectCourt(court)
+                                sudMenuExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             var expanded by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
@@ -111,7 +144,7 @@ fun CaseFormScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = viewModel.tipPostupka.name,
+                    value = displayText(viewModel.tipPostupka.label),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Vrsta postupka") },
@@ -122,7 +155,7 @@ fun CaseFormScreen(
                 ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     TipPostupka.entries.forEach { tip ->
                         DropdownMenuItem(
-                            text = { Text(tip.name) },
+                            text = { Text(tip.label) },
                             onClick = {
                                 viewModel.tipPostupka = tip
                                 expanded = false

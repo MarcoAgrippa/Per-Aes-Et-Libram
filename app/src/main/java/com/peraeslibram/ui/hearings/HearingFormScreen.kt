@@ -36,7 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -50,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.ui.common.DatePickerField
 import com.peraeslibram.ui.common.SectionHeader
+import com.peraeslibram.ui.common.Text
 import com.peraeslibram.ui.common.TimePickerField
+import com.peraeslibram.ui.common.displayText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +114,7 @@ fun HearingFormScreen(
                 onExpandedChange = { sudMenuExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = viewModel.sud,
+                    value = displayText(viewModel.sud),
                     onValueChange = {
                         viewModel.onSudChange(it)
                         sudMenuExpanded = true
@@ -157,7 +158,7 @@ fun HearingFormScreen(
                 onExpandedChange = { tipMenuExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = viewModel.tipRocista,
+                    value = displayText(viewModel.tipRocista),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Vrsta ročišta") },

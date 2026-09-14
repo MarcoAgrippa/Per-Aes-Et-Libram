@@ -25,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import com.peraeslibram.domain.model.AgendaItem
 import com.peraeslibram.ui.common.AgendaRow
 import com.peraeslibram.ui.common.EmptyState
 import com.peraeslibram.ui.common.OutlinedFab
+import com.peraeslibram.ui.common.Text
 import com.peraeslibram.ui.common.TimeframeHeader
 import com.peraeslibram.ui.common.groupByTimeframe
 import java.time.LocalDate

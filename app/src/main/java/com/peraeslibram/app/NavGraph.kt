@@ -5,6 +5,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,7 +59,7 @@ object Routes {
 }
 
 @Composable
-fun AppNavGraph() {
+fun AppNavGraph(deepLinkCaseId: Long? = null, onDeepLinkConsumed: () -> Unit = {}) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -66,6 +67,13 @@ fun AppNavGraph() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val isTopLevel = currentRoute in TOP_LEVEL_ROUTES
+
+    // Podsetnik/notifikacija otvara aplikaciju direktno na predmetu na koji se odnosi.
+    LaunchedEffect(deepLinkCaseId) {
+        val caseId = deepLinkCaseId ?: return@LaunchedEffect
+        navController.navigate(Routes.caseDetail(caseId)) { launchSingleTop = true }
+        onDeepLinkConsumed()
+    }
 
     // Material3 1.2.1 nema ugrađen BackHandler u ModalNavigationDrawer — bez ovoga bi sistemsko
     // "nazad" sa otvorenom fiokom izašlo iz aplikacije umesto da je zatvori.

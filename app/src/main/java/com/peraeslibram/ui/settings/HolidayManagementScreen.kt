@@ -23,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,6 +35,7 @@ import com.peraeslibram.domain.model.NonWorkingDayType
 import com.peraeslibram.ui.common.IconBadge
 import com.peraeslibram.ui.common.StatusChip
 import com.peraeslibram.ui.common.DatePickerField
+import com.peraeslibram.ui.common.Text
 import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")

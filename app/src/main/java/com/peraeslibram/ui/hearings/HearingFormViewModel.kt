@@ -13,6 +13,7 @@ import com.peraeslibram.domain.model.HearingStatus
 import com.peraeslibram.domain.repository.CaseRepository
 import com.peraeslibram.domain.repository.CourtRepository
 import com.peraeslibram.domain.repository.HearingRepository
+import com.peraeslibram.ui.common.matchesQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -99,7 +100,7 @@ class HearingFormViewModel @Inject constructor(
         if (query.isBlank()) {
             emptyList()
         } else {
-            courts.filter { it.naziv.contains(query, ignoreCase = true) }.take(5)
+            courts.filter { it.naziv.matchesQuery(query) }.take(5)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

@@ -28,7 +28,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -46,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.Notary
 import com.peraeslibram.ui.common.EmptyState
 import com.peraeslibram.ui.common.OutlinedFab
+import com.peraeslibram.ui.common.Text
 import com.peraeslibram.ui.common.initialsOf
 
 @OptIn(ExperimentalMaterial3Api::class)

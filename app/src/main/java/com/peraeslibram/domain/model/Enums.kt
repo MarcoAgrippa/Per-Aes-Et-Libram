@@ -10,6 +10,20 @@ enum class TipPostupka {
 }
 
 /**
+ * Naziv za prikaz, sa dijakriticima koje sam enum-konstante (validni Kotlin identifikatori)
+ * ne mogu da sadrže — [TipPostupka.name] direktno ("PARNICNI") bi se pogrešno transliterisalo
+ * u ćirilicu (C umesto Č daje "Парницни" umesto "Парнични").
+ */
+val TipPostupka.label: String
+    get() = when (this) {
+        TipPostupka.PARNICNI -> "Parnični"
+        TipPostupka.KRIVICNI -> "Krivični"
+        TipPostupka.UPRAVNI -> "Upravni"
+        TipPostupka.PREKRSAJNI -> "Prekršajni"
+        TipPostupka.DRUGO -> "Drugo"
+    }
+
+/**
  * Vrsta pravne radnje za koju se računa procesni rok. Svaka vrednost (osim
  * [CUSTOM_GENERICKI]) odgovara jednom redu u seed tabeli [com.peraeslibram.domain.model.DeadlineRule].
  */

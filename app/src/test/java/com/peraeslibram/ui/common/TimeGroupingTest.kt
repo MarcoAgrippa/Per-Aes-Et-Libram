@@ -6,6 +6,7 @@ import org.junit.Test
 
 class TimeGroupingTest {
 
+    // Subota, 12. septembar 2026.
     private val danas = LocalDate.of(2026, 9, 12)
 
     @Test
@@ -20,21 +21,29 @@ class TimeGroupingTest {
 
         val grupe = groupByTimeframe(stavke, today = danas) { it }
 
+        // Grupisanje je po tačnom danu (ne po nedeljnim "Sutra"/"Ove nedelje" korpama) —
+        // vidi dokumentaciju uz groupByTimeframe u TimeGrouping.kt.
         assertThat(grupe.map { it.first }).containsExactly(
-            "Prošli / istekli", "Danas", "Sutra", "Ove nedelje", "Kasnije"
+            "Prošli / istekli",
+            "Danas",
+            "Nedelja, 13. septembar",
+            "Sreda, 16. septembar",
+            "Ponedeljak, 12. oktobar"
         ).inOrder()
         assertThat(grupe.map { it.second.single() }).isEqualTo(stavke)
     }
 
     @Test
-    fun `sedmi dan je jos uvek ove nedelje, osmi je kasnije`() {
+    fun `svaki buduci dan dobija sopstvenu grupu bez obzira koliko je daleko`() {
         val grupe = groupByTimeframe(
             listOf(danas.plusDays(7), danas.plusDays(8)),
             today = danas
         ) { it }
 
-        assertThat(grupe.single { it.first == "Ove nedelje" }.second).containsExactly(danas.plusDays(7))
-        assertThat(grupe.single { it.first == "Kasnije" }.second).containsExactly(danas.plusDays(8))
+        assertThat(grupe.map { it.first }).containsExactly(
+            "Subota, 19. septembar",
+            "Nedelja, 20. septembar"
+        ).inOrder()
     }
 
     @Test

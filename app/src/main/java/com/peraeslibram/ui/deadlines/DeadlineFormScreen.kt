@@ -31,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +46,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.peraeslibram.domain.model.TipRadnje
 import com.peraeslibram.ui.common.DatePickerField
 import com.peraeslibram.ui.common.SectionHeader
+import com.peraeslibram.ui.common.Text
+import com.peraeslibram.ui.common.displayText
 import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.")
@@ -92,7 +93,7 @@ fun DeadlineFormScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = viewModel.selectedRule?.nazivPrikaz ?: "",
+                    value = displayText(viewModel.selectedRule?.nazivPrikaz ?: ""),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Vrsta radnje *") },

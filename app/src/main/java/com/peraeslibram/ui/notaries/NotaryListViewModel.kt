@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.peraeslibram.domain.model.Notary
 import com.peraeslibram.domain.repository.NotaryRepository
+import com.peraeslibram.ui.common.matchesQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,8 +31,8 @@ class NotaryListViewModel @Inject constructor(
             notaries
         } else {
             notaries.filter { notary ->
-                notary.naziv.contains(query, ignoreCase = true) ||
-                    notary.adresa?.contains(query, ignoreCase = true) == true
+                notary.naziv.matchesQuery(query) ||
+                    notary.adresa?.matchesQuery(query) == true
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

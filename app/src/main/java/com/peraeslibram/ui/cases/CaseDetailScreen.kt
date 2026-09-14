@@ -45,7 +45,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -69,9 +68,11 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.peraeslibram.domain.model.HearingStatus
 import com.peraeslibram.domain.model.Prilog
+import com.peraeslibram.domain.model.label
 import com.peraeslibram.ui.common.AccentButton
 import com.peraeslibram.ui.common.SectionHeader
 import com.peraeslibram.ui.common.TagChip
+import com.peraeslibram.ui.common.Text
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.launch
@@ -221,7 +222,7 @@ fun CaseDetailScreen(
                     }
                     Text(it.naziv, style = MaterialTheme.typography.headlineSmall)
                     Text(
-                        listOfNotNull(it.klijentIme, it.sud, it.tipPostupka.name).joinToString(" · "),
+                        listOfNotNull(it.klijentIme, it.sud, it.tipPostupka.label).joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
